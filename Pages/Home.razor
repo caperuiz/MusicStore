@@ -1,55 +1,47 @@
 ﻿@page "/"
+@inject CatalogClient client;
+@using MusicStore.Client.Clients
 @using MusicStore.Client.Models
 
 <PageTitle>Music Store</PageTitle>
 
 <h1>Welcome to Music Store</h1>
 
-@today.ToShortDateString();
 
-<table>
-    <thead>
+@if (catalogs is null)
+{
+    <p><em>Waiting</em></p>
+}
+else
+{
+    <table>
+        <thead>
         <th>Id</th>
         <th>Artist</th>
         <th>Genre</th>
         <th>Album</th>
         <th>Release Year</th>
-    </thead>
-    <tbody>
-        @foreach (var item in catalogs)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Artist</td>
-                <td>@item.Genre</td>
-                <td>@item.Album</td>
-                <td>@item.ReleaseYear</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-Welcome to your new app.
+        </thead>
+        <tbody>
+            @foreach (var item in catalogs)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Artist</td>
+                    <td>@item.Genre</td>
+                    <td>@item.Album</td>
+                    <td>@item.ReleaseYear</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code{
-    DateTime today = DateTime.Now;
-    List<Catalog> catalogs = new()
+    Catalog[]? catalogs =[];
+
+    protected override async Task OnInitializedAsync()
     {
-        new Catalog()
-        {
-            Id = 1,
-            Album="The Number Of The Beast",
-            Genre="Rock",
-            Artist="Iron Maiden",
-            ReleaseYear = new DateTime( 1983,01,01)
-        },
-        new Catalog()
-        {
-            Id = 2,
-            Album="Van Halen",
-            Genre="Rock",
-            Artist="Van Halen",
-            ReleaseYear = new DateTime( 1978,01,01)
-        },
-    };
+        catalogs = await client.GetAllCatalogsAsync();
+    }
 }
